@@ -18,7 +18,6 @@ class _MainAppState extends State<MainApp> {
 
   @override
   void dispose() {
-    counter.dispose();
     super.dispose();
   }
 
@@ -26,6 +25,10 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () => counter.add(),
+        ),
         body: Center(
           child: counter.countNotifier.collectAsWidget(
             (value, _) {

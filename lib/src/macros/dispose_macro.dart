@@ -60,7 +60,10 @@ macro class DisposeMacro
 
     final disposableFields = <FieldDeclaration>[];
     for (final field in fields) {
-      final type = field.type;
+      final type = field.type is OmittedTypeAnnotation
+          ? await builder.inferType(field.type as OmittedTypeAnnotation)
+          : field.type.code;
+
       final fieldType = await builder.resolve(type.code);
       final notifierType = await builder.resolve(
         NamedTypeAnnotationCode(name: changeNotifier),
