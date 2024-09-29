@@ -27,11 +27,6 @@ macro class StateMacro implements ClassDeclarationsMacro {
   ) async {
     final fields = await builder.fieldsOf(clazz);
 
-    final stateNotifier = await builder.resolveIdentifier(
-      viewModelMacro,
-      'StateNotifier',
-    );
-
     fields.removeWhere((field) {
       final isPrivate = field.name.startsWith('_');
       final isState = field.name.endsWith('State');
@@ -39,49 +34,82 @@ macro class StateMacro implements ClassDeclarationsMacro {
       return !isPrivate || !isState;
     });
 
+    final stateNotifier = await builder.resolveIdentifier(
+      stateNotifierCore,
+      'StateNotifier',
+    );
+
+    final stateNotifierType =
+        await builder.resolve(NamedTypeAnnotationCode(name: stateNotifier));
+
+    final stateFields = <FieldDeclaration>[];
+    for (final field in fields) {
+      final isPrivate = field.name.startsWith('_');
+      final isState = field.name.endsWith('State');
+
+      if (!isPrivate || !isState) continue;
+
+      if (field.type is OmittedTypeAnnotation) {
+        return builder.reportDiagnostic(
+          'StateNotifier type must be specified at declaration. e.g: final StateNotifier<int> _valueState = StateNotifier();',
+          Severity.error,
+          target: field.asDiagnosticTarget,
+        );
+      }
+
+      final type = await builder.resolve(field.type.code);
+      final isStateNotifier = await type.isSubtypeOf(stateNotifierType);
+
+      if (isStateNotifier) {
+        stateFields.add(field);
+      }
+    }
+
     final stream = await builder.resolveIdentifier(
       dartAsync,
       'Stream',
     );
 
-    for (final field in fields) {
+    for (final field in stateFields) {
       final name = field.name;
-      final notifierName = '${name}Notifier';
-      final stateName = '${name.public.withoutSuffix('State')}Value';
+      final notifierName = name;
+      final stateName = '${name.withoutSuffix('State')}Value';
       final notifierGetterName = '${name.public.withoutSuffix('State')}Stream';
       final emitterName =
           '_emit${name.public.capitalizeFirst.withoutSuffix('State')}';
 
+      final fieldType = field.type as NamedTypeAnnotation;
+      final innerType = fieldType.typeArguments.firstOrNull;
+
+      if (innerType is! NamedTypeAnnotation) {
+        return builder.reportDiagnostic(
+          'StateNotifier type must be specified at declaration. e.g: final StateNotifier<int> _valueState = StateNotifier();',
+          Severity.error,
+          target: field.asDiagnosticTarget,
+        );
+      }
+
       builder
-        ..declareInType(
-          DeclarationCode.fromParts([
-            '  late final $notifierName = ',
-            stateNotifier,
-            '<',
-            field.type.code,
-            '>($name);',
-          ]),
-        )
         ..declareInType(
           DeclarationCode.fromParts([
             '  ',
             stream,
             '<',
-            field.type.code,
+            innerType.code,
             '> get $notifierGetterName => $notifierName.stream;',
           ]),
         )
         ..declareInType(
           DeclarationCode.fromParts([
             '  ',
-            field.type.code,
+            innerType.code,
             ' get $stateName => $notifierName.state;',
           ]),
         )
         ..declareInType(
           DeclarationCode.fromParts([
             '  void $emitterName(',
-            field.type.code,
+            innerType.code,
             ' value) => $notifierName.emit(value);',
           ]),
         );

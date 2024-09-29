@@ -53,9 +53,9 @@ macro class DisposeMacro
 
     final fields = await builder.fieldsOf(clazz);
 
-    final changeNotifier = await builder.resolveIdentifier(
-      flutterFoundation,
-      'ChangeNotifier',
+    final notifier = await builder.resolveIdentifier(
+      notifierCore,
+      'Notifier',
     );
 
     final disposableFields = <FieldDeclaration>[];
@@ -66,7 +66,7 @@ macro class DisposeMacro
 
       final fieldType = await builder.resolve(type.code);
       final notifierType = await builder.resolve(
-        NamedTypeAnnotationCode(name: changeNotifier),
+        NamedTypeAnnotationCode(name: notifier),
       );
 
       if (await fieldType.isSubtypeOf(notifierType)) {
