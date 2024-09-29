@@ -3,6 +3,7 @@ library view_model_macro;
 // import 'package:view_model_macro/src/core/view_model.dart';
 
 export 'package:view_model_macro/src/core/core_barrel.dart';
+export 'package:view_model_macro/src/models/models_barrel.dart';
 
 // @ViewModel()
 // class Calculator {

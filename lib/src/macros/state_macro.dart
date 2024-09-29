@@ -13,6 +13,11 @@ macro class StateMacro implements ClassDeclarationsMacro {
     ClassDeclaration clazz,
     MemberDeclarationBuilder builder,
   ) async {
+    builder.declareInLibrary(
+      DeclarationCode.fromString(
+        "import 'package:view_model_macro/view_model_macro.dart';\n",
+      ),
+    );
     await _declareStates(clazz, builder);
   }
 
@@ -22,6 +27,11 @@ macro class StateMacro implements ClassDeclarationsMacro {
   ) async {
     final fields = await builder.fieldsOf(clazz);
 
+    final stateNotifier = await builder.resolveIdentifier(
+      viewModelMacro,
+      'StateNotifier',
+    );
+
     fields.removeWhere((field) {
       final isPrivate = field.name.startsWith('_');
       final isState = field.name.endsWith('State');
@@ -29,25 +39,24 @@ macro class StateMacro implements ClassDeclarationsMacro {
       return !isPrivate || !isState;
     });
 
-    final valueNotifier = await builder.resolveIdentifier(
-      flutterFoundation,
-      'ValueNotifier',
+    final stream = await builder.resolveIdentifier(
+      dartAsync,
+      'Stream',
     );
 
     for (final field in fields) {
       final name = field.name;
       final notifierName = '${name}Notifier';
-      final notifierGetterName =
-          '${name.public.withoutSuffix('State')}Notifier';
       final stateName = '${name.public.withoutSuffix('State')}Value';
+      final notifierGetterName = '${name.public.withoutSuffix('State')}Stream';
       final emitterName =
-          'emit${name.public.capitalizeFirst.withoutSuffix('State')}';
+          '_emit${name.public.capitalizeFirst.withoutSuffix('State')}';
 
       builder
         ..declareInType(
           DeclarationCode.fromParts([
             '  late final $notifierName = ',
-            valueNotifier,
+            stateNotifier,
             '<',
             field.type.code,
             '>($name);',
@@ -56,24 +65,24 @@ macro class StateMacro implements ClassDeclarationsMacro {
         ..declareInType(
           DeclarationCode.fromParts([
             '  ',
-            valueNotifier,
+            stream,
             '<',
             field.type.code,
-            '> get $notifierGetterName => $notifierName;',
+            '> get $notifierGetterName => $notifierName.stream;',
           ]),
         )
         ..declareInType(
           DeclarationCode.fromParts([
             '  ',
             field.type.code,
-            ' get $stateName => $notifierName.value;',
+            ' get $stateName => $notifierName.state;',
           ]),
         )
         ..declareInType(
           DeclarationCode.fromParts([
             '  void $emitterName(',
             field.type.code,
-            ' value) => $notifierName.value = value;',
+            ' value) => $notifierName.emit(value);',
           ]),
         );
     }

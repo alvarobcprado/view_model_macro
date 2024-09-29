@@ -30,8 +30,8 @@ class _MainAppState extends State<MainApp> {
           onPressed: () => counter.add(),
         ),
         body: Center(
-          child: counter.countNotifier.collectAsWidget(
-            (value, _) {
+          child: counter.countStream.collectAsState(
+            (value) {
               return Text('Count: $value');
             },
           ),

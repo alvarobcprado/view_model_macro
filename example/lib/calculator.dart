@@ -6,6 +6,6 @@ import 'package:view_model_macro/view_model_macro.dart';
 class Calculator {
   final int _countState = 0;
 
-  void add() => emitCount(countValue + 1);
-  void subtract() => emitCount(countValue - 1);
+  void add() => _emitCount(countValue + 1);
+  void subtract() => _emitCount(countValue - 1);
 }
