@@ -1,11 +1,35 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-extension StateCollectorX<T> on ValueNotifier<T> {
-  Widget collectAsWidget(Widget Function(T, Widget?) builder, {Widget? child}) {
-    return ValueListenableBuilder(
-      valueListenable: this,
-      child: child,
-      builder: (context, value, child) => builder(value, child),
+import 'package:flutter/material.dart';
+import 'package:view_model_macro/src/widgets/stream_listener.dart';
+
+extension StreamCollectorX<T> on Stream<T> {
+  Widget collectAsWidget(
+    Widget Function(T) builder, {
+    Widget? emptyData,
+    T? initialData,
+  }) {
+    return StreamBuilder(
+      stream: this,
+      initialData: initialData,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return builder(snapshot.data as T);
+        } else {
+          return emptyData ?? const SizedBox.shrink();
+        }
+      },
     );
   }
+
+  Widget collectAsListener({required void Function(T) onData, Widget? child}) {
+    return StreamListener(
+      stream: this,
+      onData: onData,
+      child: child,
+    );
+  }
+
+  StreamSubscription<T> collect(void Function(T) onData) =>
+      listen((data) => onData(data));
 }

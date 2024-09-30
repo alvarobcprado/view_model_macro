@@ -5,23 +5,18 @@ import 'package:view_model_macro/src/utils/libraries.dart';
 import 'package:view_model_macro/src/utils/macro_extensions.dart';
 import 'package:view_model_macro/src/utils/string_extensions.dart';
 
-macro class StateMacro implements ClassDeclarationsMacro {
-  const StateMacro();
+macro class ActionMacro implements ClassDeclarationsMacro {
+  const ActionMacro();
 
   @override
   FutureOr<void> buildDeclarationsForClass(
     ClassDeclaration clazz,
     MemberDeclarationBuilder builder,
   ) async {
-    builder.declareInLibrary(
-      DeclarationCode.fromString(
-        "import 'package:view_model_macro/view_model_macro.dart';\n",
-      ),
-    );
-    await _declareStates(clazz, builder);
+    await _declareActions(clazz, builder);
   }
 
-  FutureOr<void> _declareStates(
+  FutureOr<void> _declareActions(
     ClassDeclaration clazz,
     MemberDeclarationBuilder builder,
   ) async {
@@ -29,39 +24,39 @@ macro class StateMacro implements ClassDeclarationsMacro {
 
     final fields = [...classFields]..removeWhere((field) {
         final isPrivate = field.name.startsWith('_');
-        final isState = field.name.endsWith('State');
+        final isAction = field.name.endsWith('Action');
 
-        return !isPrivate || !isState;
+        return !isPrivate || !isAction;
       });
 
-    final stateNotifier = await builder.resolveIdentifier(
-      stateNotifierCore,
-      'StateNotifier',
+    final actionNotifier = await builder.resolveIdentifier(
+      actionNotifierCore,
+      'ActionNotifier',
     );
 
-    final stateNotifierType =
-        await builder.resolve(NamedTypeAnnotationCode(name: stateNotifier));
+    final actionNotifierType =
+        await builder.resolve(NamedTypeAnnotationCode(name: actionNotifier));
 
-    final stateFields = <FieldDeclaration>[];
+    final actionFields = <FieldDeclaration>[];
     for (final field in fields) {
       final isPrivate = field.name.startsWith('_');
-      final isState = field.name.endsWith('State');
+      final isAction = field.name.endsWith('Action');
 
-      if (!isPrivate || !isState) continue;
+      if (!isPrivate || !isAction) continue;
 
       if (field.type is OmittedTypeAnnotation) {
         return builder.reportDiagnostic(
-          'StateNotifier type must be specified at declaration. e.g: final StateNotifier<int> _valueState = StateNotifier();',
+          'ActionNotifier type must be specified at declaration. e.g: final ActionNotifier<int> _valueAction = ActionNotifier();',
           Severity.error,
           target: field.asDiagnosticTarget,
         );
       }
 
       final type = await builder.resolve(field.type.code);
-      final isStateNotifier = await type.isSubtypeOf(stateNotifierType);
+      final isActionNotifier = await type.isSubtypeOf(actionNotifierType);
 
-      if (isStateNotifier) {
-        stateFields.add(field);
+      if (isActionNotifier) {
+        actionFields.add(field);
       }
     }
 
@@ -70,24 +65,25 @@ macro class StateMacro implements ClassDeclarationsMacro {
       'Stream',
     );
 
-    for (final field in stateFields) {
+    for (final field in actionFields) {
       final name = field.name;
       final notifierName = name;
-      final stateName = '${name.withoutSuffix('State')}Value';
-      final notifierGetterName = '${name.public.withoutSuffix('State')}Stream';
+      final notifierGetterName = '${name.public.withoutSuffix('Action')}Stream';
       final emitterName =
-          '_emit${name.public.capitalizeFirst.withoutSuffix('State')}';
+          '_dispatch${name.public.capitalizeFirst.withoutSuffix('Action')}';
 
       final fieldType = field.type as NamedTypeAnnotation;
       final innerType = fieldType.typeArguments.firstOrNull;
 
       if (innerType is! NamedTypeAnnotation) {
         return builder.reportDiagnostic(
-          'StateNotifier type must be specified at declaration. e.g: final StateNotifier<int> _valueState = StateNotifier();',
+          'ActionNotifier type must be specified at declaration. e.g: final ActionNotifier<int> _valueState = ActionNotifier();',
           Severity.error,
           target: field.asDiagnosticTarget,
         );
       }
+
+      final isVoid = innerType.identifier.name == 'void';
 
       builder
         ..declareInType(
@@ -101,16 +97,9 @@ macro class StateMacro implements ClassDeclarationsMacro {
         )
         ..declareInType(
           DeclarationCode.fromParts([
-            '  ',
-            innerType.code,
-            ' get $stateName => $notifierName.state;',
-          ]),
-        )
-        ..declareInType(
-          DeclarationCode.fromParts([
             '  void $emitterName(',
-            innerType.code,
-            ' value) => $notifierName.emit(value);',
+            if (!isVoid) ...[innerType.code, ' value'],
+            ') => $notifierName.emit(${isVoid ? null : 'value'});',
             '\n',
           ]),
         );
