@@ -1,6 +1,6 @@
 import 'package:view_model_macro/view_model_macro.dart';
 
-@ViewModel()
+@ViewModel(enableActions: true)
 class Calculator {
   Calculator() {
     countStream.collect((countValue) {

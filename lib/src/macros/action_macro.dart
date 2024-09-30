@@ -1,11 +1,28 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:macros/macros.dart';
 import 'package:view_model_macro/src/utils/libraries.dart';
 import 'package:view_model_macro/src/utils/macro_extensions.dart';
 import 'package:view_model_macro/src/utils/string_extensions.dart';
+import 'package:view_model_macro/view_model_macro.dart';
 
+/// {@template ActionMacro}
+/// A macro for building [ActionNotifier]s utility methods.
+/// 
+/// For every [ActionNotifier] in the class with the `@ActionMacro()` 
+/// annotation, the macro will generate the following:
+/// - A public getter for the stream of actions from the [ActionNotifier].
+/// - A private method to dispatch a new action to the [ActionNotifier].
+/// 
+/// See more:
+/// - [DisposeMacro]: The macro for building `dispose` methods.
+/// - [StateMacro]: The macro for building [StateNotifier]s.
+/// - [ViewModel]: The macro for building ViewModels.
+/// {@endtemplate}
 macro class ActionMacro implements ClassDeclarationsMacro {
+  /// {@macro ActionMacro}
   const ActionMacro();
 
   @override
@@ -46,7 +63,8 @@ macro class ActionMacro implements ClassDeclarationsMacro {
 
       if (field.type is OmittedTypeAnnotation) {
         return builder.reportDiagnostic(
-          'ActionNotifier type must be specified at declaration. e.g: final ActionNotifier<int> _valueAction = ActionNotifier();',
+          'ActionNotifier type must be specified at declaration. e.g: '
+          'final ActionNotifier<int> _valueAction = ActionNotifier();',
           Severity.error,
           target: field.asDiagnosticTarget,
         );
@@ -77,7 +95,8 @@ macro class ActionMacro implements ClassDeclarationsMacro {
 
       if (innerType is! NamedTypeAnnotation) {
         return builder.reportDiagnostic(
-          'ActionNotifier type must be specified at declaration. e.g: final ActionNotifier<int> _valueState = ActionNotifier();',
+          'ActionNotifier type must be specified at declaration. e.g: '
+          'final ActionNotifier<int> _valueState = ActionNotifier();',
           Severity.error,
           target: field.asDiagnosticTarget,
         );
