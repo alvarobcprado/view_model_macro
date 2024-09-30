@@ -1,39 +1,106 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# data_class
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+[![pub package](https://img.shields.io/pub/v/view_model_macro.svg)](https://pub.dev/packages/view_model_macro)
+[![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+Support for ViewModels utilities in Dart using [macros](https://dart.dev/language/macros).
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## ✨ Features
 
-## Features
+- `StateNotifier` with private state and emitter and public Stream.
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- `ActionNotifier` optional notifier with private emitter and public Stream.
 
-## Getting started
+- `Dispose` automatically disposes all notifiers declared from ViewModel
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+## 🧑‍💻 Example
 
 ```dart
-const like = 'sample';
+import 'package:view_model_macro/view_model_macro.dart';
+
+@ViewModel()
+class Counter {
+  final StateNotifier<int> _countState = StateNotifier(0);
+
+  void add() => _emitCount(_countValue + 1);
+  void subtract() => _emitCount(_countValue - 1);
+}
+
+void main() {
+  runApp(const MainApp());
+}
+
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  // Declare the ViewModel
+  final counter = Counter();
+
+  @override
+  void dispose() {
+    // Disposes when needed
+    counter.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () => counter.add(),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Collect the data from the stream
+              // and build a widget based on its data
+              counter.countStream.collectAsWidget(
+                initialData: 0,
+                (value) {
+                  return Text('Count: $value');
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 ```
 
-## Additional information
+## 🚀 Quick Start
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+1. Add `package:view_model_macro` to your `pubspec.yaml`
+
+   ```yaml
+   dependencies:
+     view_model_macro: any
+   ```
+
+1. Enable experimental macros in `analysis_options.yaml`
+
+   ```yaml
+   analyzer:
+     enable-experiment:
+       - macros
+   ```
+
+1. Use the `@ViewModel` annotation (see above example).
+
+1. Run it
+
+   ```sh
+   flutter --enable-experiment=macros run
+   ```
+
+_\*Requires Dart SDK >= 3.5.0_
