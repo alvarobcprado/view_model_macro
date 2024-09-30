@@ -8,9 +8,11 @@ abstract class Notifier<T> {
 
   void emit(T value);
 
-  void listen(void Function(T) onData) {
+  StreamSubscription<T> listen(void Function(T) onData) {
     final subscription = stream.listen(onData);
     _subscriptions.add(subscription);
+
+    return subscription;
   }
 
   @mustCallSuper

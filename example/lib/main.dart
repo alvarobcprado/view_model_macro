@@ -30,10 +30,20 @@ class _MainAppState extends State<MainApp> {
           onPressed: () => counter.add(),
         ),
         body: Center(
-          child: counter.countStream.collectAsState(
-            (value) {
-              return Text('Count: $value');
-            },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              counter.countStream.collectAsWidget(
+                (value) {
+                  return Text('Count: $value');
+                },
+              ),
+              counter.reverseCountStream.collectAsWidget(
+                (value) {
+                  return Text('Reversed count: $value');
+                },
+              ),
+            ],
           ),
         ),
       ),
