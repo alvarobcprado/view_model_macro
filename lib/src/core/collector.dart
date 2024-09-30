@@ -1,12 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:view_model_macro/src/models/models_barrel.dart';
+import 'package:view_model_macro/src/widgets/stream_listener.dart';
 
-extension StateStreamCollectorX<T> on Stream<T> {
-  Widget collectAsWidget(Widget Function(T) builder, {Widget? emptyData}) {
+extension StreamCollectorX<T> on Stream<T> {
+  Widget collectAsWidget(
+    Widget Function(T) builder, {
+    Widget? emptyData,
+    T? initialData,
+  }) {
     return StreamBuilder(
       stream: this,
+      initialData: initialData,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return builder(snapshot.data as T);
@@ -17,24 +22,14 @@ extension StateStreamCollectorX<T> on Stream<T> {
     );
   }
 
-  StreamSubscription<T> collect(void Function(T) onData) =>
-      listen((data) => onData(data));
-}
-
-extension StateNotifierCollectorX<T> on StateNotifier<T> {
-  StreamSubscription<T> collect(void Function(T) onData) =>
-      listen((data) => onData(data));
-
-  Widget collectAsWidget(Widget Function(T) builder, {Widget? emptyData}) {
-    return StreamBuilder(
-      stream: stream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return builder(snapshot.data as T);
-        } else {
-          return emptyData ?? const SizedBox.shrink();
-        }
-      },
+  Widget collectAsListener({required void Function(T) onData, Widget? child}) {
+    return StreamListener(
+      stream: this,
+      onData: onData,
+      child: child,
     );
   }
+
+  StreamSubscription<T> collect(void Function(T) onData) =>
+      listen((data) => onData(data));
 }

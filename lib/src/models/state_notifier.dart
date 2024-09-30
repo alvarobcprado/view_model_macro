@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/transformers.dart';
 import 'package:view_model_macro/src/models/notifier.dart';
 
 class StateNotifier<T> extends Notifier<T> {
@@ -18,7 +17,7 @@ class StateNotifier<T> extends Notifier<T> {
   }
 
   @override
-  Stream<T> get stream => _controller.stream.startWith(_state);
+  Stream<T> get stream => _controller.stream;
 
   @override
   void dispose() {

@@ -21,6 +21,12 @@ class _MainAppState extends State<MainApp> {
     super.dispose();
   }
 
+  void _onShowSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Show SnackBar from ActionNotifier')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,23 +35,24 @@ class _MainAppState extends State<MainApp> {
           child: const Icon(Icons.add),
           onPressed: () => counter.add(),
         ),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              counter.countStream.collectAsWidget(
-                (value) {
-                  return Text('Count: $value');
-                },
+        body: Builder(builder: (context) {
+          return counter.showSnackBarStream.collectAsListener(
+            onData: (_) => _onShowSnackBar(context),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  counter.countStream.collectAsWidget(
+                    initialData: 0,
+                    (value) {
+                      return Text('Count: $value');
+                    },
+                  ),
+                ],
               ),
-              counter.reverseCountStream.collectAsWidget(
-                (value) {
-                  return Text('Reversed count: $value');
-                },
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        }),
       ),
     );
   }
