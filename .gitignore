@@ -28,5 +28,6 @@ migrate_working_dir/
 .dart_tool/
 build/
 
-**/.puro.json
+.puro.json
+**/.vscode/
 .vscode/
