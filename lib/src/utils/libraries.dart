@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 final dartCore = Uri.parse('dart:core');
 final dartAsync = Uri.parse('dart:async');
 final flutterFoundation =

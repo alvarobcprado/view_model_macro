@@ -1,11 +1,28 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:macros/macros.dart';
+import 'package:view_model_macro/src/models/models_barrel.dart';
 import 'package:view_model_macro/src/utils/libraries.dart';
 import 'package:view_model_macro/src/utils/macro_extensions.dart';
 
+/// {@template DisposeMacro}
+/// A macro for building `dispose` method for [Notifier]s in the class.
+/// 
+/// For every [Notifier] in the class with the `@DisposeMacro()` annotation, the
+/// macro will generate the following:
+/// - A `dispose` method that will call dispose on all [Notifier]s declared in 
+/// the class.
+/// 
+/// See more:
+/// - [StateMacro]: The macro for building [StateNotifier]s.
+/// - [ActionMacro]: The macro for building [ActionNotifier]s.
+/// - [ViewModel]: The macro for building ViewModels.
+/// {@endtemplate}
 macro class DisposeMacro
     implements ClassDeclarationsMacro, ClassDefinitionMacro {
+  /// {@macro DisposeMacro}
   const DisposeMacro();
 
   @override
@@ -20,10 +37,10 @@ macro class DisposeMacro
       return;
     }
 
-    await declareDisposeMethod(clazz, builder);
+    await _declareDisposeMethod(clazz, builder);
   }
 
-  FutureOr<void> declareDisposeMethod(
+  FutureOr<void> _declareDisposeMethod(
     ClassDeclaration clazz,
     MemberDeclarationBuilder builder,
   ) async {

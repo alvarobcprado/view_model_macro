@@ -1,11 +1,30 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:macros/macros.dart';
+import 'package:view_model_macro/src/models/models_barrel.dart';
 import 'package:view_model_macro/src/utils/libraries.dart';
 import 'package:view_model_macro/src/utils/macro_extensions.dart';
 import 'package:view_model_macro/src/utils/string_extensions.dart';
 
+
+/// {@template StateMacro}
+/// A macro for building [StateNotifier]s utility methods.
+/// 
+/// For every [StateNotifier] in the class with the `@StateMacro()` annotation,
+/// the macro will generate the following:
+/// - A public getter for the stream of states from the [StateNotifier].
+/// - A private getter for the current state from the [StateNotifier].
+/// - A private method to emit a new state to the [StateNotifier].
+/// 
+/// See more:
+/// - [ActionMacro]: The macro for building [ActionNotifier]s.
+/// - [DisposeMacro]: The macro for building `dispose` methods.
+/// - [ViewModel]: The macro for building ViewModels.
+/// {@endtemplate}
 macro class StateMacro implements ClassDeclarationsMacro {
+  /// {@macro StateMacro}
   const StateMacro();
 
   @override
@@ -51,7 +70,8 @@ macro class StateMacro implements ClassDeclarationsMacro {
 
       if (field.type is OmittedTypeAnnotation) {
         return builder.reportDiagnostic(
-          'StateNotifier type must be specified at declaration. e.g: final StateNotifier<int> _valueState = StateNotifier();',
+          'StateNotifier type must be specified at declaration. e.g: '
+          'final StateNotifier<int> _valueState = StateNotifier();',
           Severity.error,
           target: field.asDiagnosticTarget,
         );
@@ -83,7 +103,8 @@ macro class StateMacro implements ClassDeclarationsMacro {
 
       if (innerType is! NamedTypeAnnotation) {
         return builder.reportDiagnostic(
-          'StateNotifier type must be specified at declaration. e.g: final StateNotifier<int> _valueState = StateNotifier();',
+          'StateNotifier type must be specified at declaration. e.g: '
+          'final StateNotifier<int> _valueState = StateNotifier();',
           Severity.error,
           target: field.asDiagnosticTarget,
         );
@@ -110,7 +131,7 @@ macro class StateMacro implements ClassDeclarationsMacro {
           DeclarationCode.fromParts([
             '  void $emitterName(',
             innerType.code,
-            ' value) => $notifierName.emit(value);',
+            ' value) => $notifierName.notify(value);',
             '\n',
           ]),
         );

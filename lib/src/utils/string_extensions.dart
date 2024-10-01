@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 extension StringX on String {
   String get capitalizeFirst => '${this[0].toUpperCase()}${substring(1)}';
   String get public => startsWith('_') ? substring(1) : this;
