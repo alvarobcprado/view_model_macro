@@ -1,21 +1,20 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 /// {@template Notifier}
 /// A base class for [Notifier]s.
-/// 
+///
 /// It notifies its listeners when it emits a new value with the [notify] method
 /// and can be listened with the [listen] method.
-/// 
+///
 /// Also, it can be disposed with the [dispose] method.
-/// 
+///
 /// See more:
 /// - [StateNotifier]: A notifier that holds states.
 /// - [ActionNotifier]: A notifier to dispatch actions.
 /// {@endtemplate}
 abstract class Notifier<T> {
-
   final List<StreamSubscription<T>> _subscriptions = [];
 
   /// The stream that yields a new value when it is notified.

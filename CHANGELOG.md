@@ -1,6 +1,10 @@
+## 0.0.3
+
+* doc comments adjusts
+
 ## 0.0.2
 
-* readmed adjusts
+* readme adjusts
 
 ## 0.0.1
 

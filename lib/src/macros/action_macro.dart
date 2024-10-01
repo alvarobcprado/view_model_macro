@@ -3,10 +3,10 @@
 import 'dart:async';
 
 import 'package:macros/macros.dart';
+import 'package:view_model_macro/src/models/models_barrel.dart';
 import 'package:view_model_macro/src/utils/libraries.dart';
 import 'package:view_model_macro/src/utils/macro_extensions.dart';
 import 'package:view_model_macro/src/utils/string_extensions.dart';
-import 'package:view_model_macro/view_model_macro.dart';
 
 /// {@template ActionMacro}
 /// A macro for building [ActionNotifier]s utility methods.
