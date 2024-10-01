@@ -100,7 +100,7 @@ class _MainAppState extends State<MainApp> {
 1. Run it
 
    ```sh
-   flutter --enable-experiment=macros run
+   flutter run --enable-experiment=macros
    ```
 
 _\*Requires Dart SDK >= 3.5.0_
