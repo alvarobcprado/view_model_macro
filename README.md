@@ -1,4 +1,4 @@
-# data_class
+# ViewModel Macro
 
 [![pub package](https://img.shields.io/pub/v/view_model_macro.svg)](https://pub.dev/packages/view_model_macro)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
