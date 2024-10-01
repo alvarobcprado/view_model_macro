@@ -33,7 +33,7 @@ abstract class Notifier<T> {
   }
 
   /// Disposes all subscriptions
-  // @mustCallSuper
+  @mustCallSuper
   void dispose() {
     for (final subscription in _subscriptions) {
       subscription.cancel();
