@@ -118,7 +118,7 @@ macro class ActionMacro implements ClassDeclarationsMacro {
           DeclarationCode.fromParts([
             '  void $emitterName(',
             if (!isVoid) ...[innerType.code, ' value'],
-            ') => $notifierName.emit(${isVoid ? null : 'value'});',
+            ') => $notifierName.notify(${isVoid ? null : 'value'});',
             '\n',
           ]),
         );

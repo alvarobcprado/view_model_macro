@@ -131,7 +131,7 @@ macro class StateMacro implements ClassDeclarationsMacro {
           DeclarationCode.fromParts([
             '  void $emitterName(',
             innerType.code,
-            ' value) => $notifierName.emit(value);',
+            ' value) => $notifierName.notify(value);',
             '\n',
           ]),
         );
