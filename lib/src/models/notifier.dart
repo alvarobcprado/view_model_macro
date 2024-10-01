@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 /// {@template Notifier}
 /// A base class for [Notifier]s.
@@ -33,7 +33,7 @@ abstract class Notifier<T> {
   }
 
   /// Disposes all subscriptions
-  @mustCallSuper
+  // @mustCallSuper
   void dispose() {
     for (final subscription in _subscriptions) {
       subscription.cancel();
