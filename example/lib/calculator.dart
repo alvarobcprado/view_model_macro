@@ -10,8 +10,8 @@ class Calculator {
     });
   }
 
-  final StateNotifier<int> _countState = StateNotifier(0);
-  final ActionNotifier<void> _showSnackBarAction = ActionNotifier();
+  final StateNotifier<int> _count = StateNotifier(0);
+  final ActionNotifier<void> _showSnackBar = ActionNotifier();
 
   void add() => _emitCount(_countValue + 1);
   void subtract() => _emitCount(_countValue - 1);

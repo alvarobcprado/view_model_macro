@@ -20,7 +20,7 @@ import 'package:view_model_macro/view_model_macro.dart';
 
 @ViewModel()
 class Counter {
-  final StateNotifier<int> _countState = StateNotifier(0);
+  final StateNotifier<int> _count = StateNotifier(0);
 
   void add() => _emitCount(_countValue + 1);
   void subtract() => _emitCount(_countValue - 1);
