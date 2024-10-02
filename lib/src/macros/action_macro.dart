@@ -10,12 +10,12 @@ import 'package:view_model_macro/src/utils/string_extensions.dart';
 
 /// {@template ActionMacro}
 /// A macro for building [ActionNotifier]s utility methods.
-/// 
-/// For every [ActionNotifier] in the class with the `@ActionMacro()` 
+///
+/// For every [ActionNotifier] in the class with the `@ActionMacro()`
 /// annotation, the macro will generate the following:
 /// - A public getter for the stream of actions from the [ActionNotifier].
 /// - A private method to dispatch a new action to the [ActionNotifier].
-/// 
+///
 /// See more:
 /// - [DisposeMacro]: The macro for building `dispose` methods.
 /// - [StateMacro]: The macro for building [StateNotifier]s.
@@ -37,53 +37,53 @@ macro class ActionMacro implements ClassDeclarationsMacro {
     ClassDeclaration clazz,
     MemberDeclarationBuilder builder,
   ) async {
-    final classFields = await builder.fieldsOf(clazz);
-
-    final fields = [...classFields]..removeWhere((field) {
-        final isPrivate = field.name.startsWith('_');
-        final isAction = field.name.endsWith('Action');
-
-        return !isPrivate || !isAction;
-      });
-
-    final actionNotifier = await builder.resolveIdentifier(
+    final actionNotifierIdentifier = await builder.resolveIdentifier(
       actionNotifierCore,
       'ActionNotifier',
     );
 
-    final actionNotifierType =
-        await builder.resolve(NamedTypeAnnotationCode(name: actionNotifier));
+    final actionNotifierType = await builder.resolve(
+      NamedTypeAnnotationCode(name: actionNotifierIdentifier),
+    );
 
-    final actionFields = <FieldDeclaration>[];
-    for (final field in fields) {
-      final isPrivate = field.name.startsWith('_');
-      final isAction = field.name.endsWith('Action');
-
-      if (!isPrivate || !isAction) continue;
-
-      if (field.type is OmittedTypeAnnotation) {
-        return builder.reportDiagnostic(
-          'ActionNotifier type must be specified at declaration. e.g: '
-          'final ActionNotifier<int> _valueAction = ActionNotifier();',
-          Severity.error,
-          target: field.asDiagnosticTarget,
-        );
-      }
-
-      final type = await builder.resolve(field.type.code);
-      final isActionNotifier = await type.isSubtypeOf(actionNotifierType);
-
-      if (isActionNotifier) {
-        actionFields.add(field);
-      }
-    }
-
-    final stream = await builder.resolveIdentifier(
+    final streamIdentifier = await builder.resolveIdentifier(
       dartAsync,
       'Stream',
     );
 
-    for (final field in actionFields) {
+    final classFields = await builder.fieldsOf(clazz);
+
+    final actionNotifierFields = <FieldDeclaration>[];
+
+    for (final field in classFields) {
+      if (field.type is OmittedTypeAnnotation) {
+        builder.reportDiagnostic(
+          'Only named types are supported in this macro. e.g: '
+          '<Type> ${field.name}',
+          Severity.warning,
+          target: field.asDiagnosticTarget,
+        );
+        continue;
+      }
+
+      final type = await builder.resolve(field.type.code);
+      final isPrivate = field.name.startsWith('_');
+      final isAction = await type.isSubtypeOf(actionNotifierType);
+
+      if (isAction) {
+        if (!isPrivate) {
+          builder.reportDiagnostic(
+            'StateNotifier type must be private.',
+            Severity.error,
+            target: field.asDiagnosticTarget,
+          );
+          continue;
+        }
+        actionNotifierFields.add(field);
+      }
+    }
+
+    for (final field in actionNotifierFields) {
       final name = field.name;
       final notifierName = name;
       final notifierGetterName = '${name.public.withoutSuffix('Action')}Stream';
@@ -108,7 +108,7 @@ macro class ActionMacro implements ClassDeclarationsMacro {
         ..declareInType(
           DeclarationCode.fromParts([
             '  ',
-            stream,
+            streamIdentifier,
             '<',
             innerType.code,
             '> get $notifierGetterName => $notifierName.stream;',
