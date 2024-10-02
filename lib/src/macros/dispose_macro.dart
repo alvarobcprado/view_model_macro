@@ -70,9 +70,9 @@ macro class DisposeMacro
 
     final fields = await builder.fieldsOf(clazz);
 
-    final notifier = await builder.resolveIdentifier(
-      notifierCore,
-      'Notifier',
+    final disposable = await builder.resolveIdentifier(
+      disposableCore,
+      'Disposable',
     );
 
     final disposableFields = <FieldDeclaration>[];
@@ -82,11 +82,11 @@ macro class DisposeMacro
           : field.type.code;
 
       final fieldType = await builder.resolve(type.code);
-      final notifierType = await builder.resolve(
-        NamedTypeAnnotationCode(name: notifier),
+      final disposableType = await builder.resolve(
+        NamedTypeAnnotationCode(name: disposable),
       );
 
-      if (await fieldType.isSubtypeOf(notifierType)) {
+      if (await fieldType.isSubtypeOf(disposableType)) {
         disposableFields.add(field);
       }
     }

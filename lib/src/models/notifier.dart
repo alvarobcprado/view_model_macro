@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:meta/meta.dart';
+import 'package:view_model_macro/src/models/disposable.dart';
 
 /// {@template Notifier}
 /// A base class for [Notifier]s.
@@ -14,7 +14,7 @@ import 'package:meta/meta.dart';
 /// - [StateNotifier]: A notifier that holds states.
 /// - [ActionNotifier]: A notifier to dispatch actions.
 /// {@endtemplate}
-abstract class Notifier<T> {
+abstract class Notifier<T> implements Disposable {
   final List<StreamSubscription<T>> _subscriptions = [];
 
   /// The stream that yields a new value when it is notified.
@@ -32,10 +32,11 @@ abstract class Notifier<T> {
   }
 
   /// Disposes all subscriptions
-  @mustCallSuper
+  @override
   void dispose() {
     for (final subscription in _subscriptions) {
       subscription.cancel();
     }
+    _subscriptions.clear();
   }
 }

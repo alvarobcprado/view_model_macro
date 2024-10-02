@@ -53,7 +53,7 @@ macro class StateMacro implements ClassDeclarationsMacro {
     );
 
     final streamIdentifier = await builder.resolveIdentifier(
-      dartAsync,
+      dartAsyncCore,
       'Stream',
     );
 

@@ -47,7 +47,7 @@ macro class ActionMacro implements ClassDeclarationsMacro {
     );
 
     final streamIdentifier = await builder.resolveIdentifier(
-      dartAsync,
+      dartAsyncCore,
       'Stream',
     );
 
