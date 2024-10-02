@@ -10,5 +10,7 @@ final actionNotifierCore =
     Uri.parse('package:view_model_macro/src/models/action_notifier.dart');
 final notifierCore =
     Uri.parse('package:view_model_macro/src/models/notifier.dart');
+final debouncerCore =
+    Uri.parse('package:view_model_macro/src/models/debouncer.dart');
 final disposableCore =
     Uri.parse('package:view_model_macro/src/models/disposable.dart');

@@ -13,6 +13,10 @@ class Calculator {
   final StateNotifier<int> _count = StateNotifier(0);
   final ActionNotifier<void> _showSnackBar = ActionNotifier();
 
-  void add() => _emitCount(_countValue + 1);
+  @DebouncerMacro(5000)
+  void add() {
+    _emitCount(_countValue + 1);
+  }
+
   void subtract() => _emitCount(_countValue - 1);
 }
