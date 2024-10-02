@@ -1,3 +1,8 @@
+## 0.0.4
+
+* remove name restriction of StateNotifier declaration
+* remove name restriction of ActionNotifier declaration
+
 ## 0.0.3
 
 * doc comments adjusts
