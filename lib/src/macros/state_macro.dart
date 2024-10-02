@@ -8,16 +8,15 @@ import 'package:view_model_macro/src/utils/libraries.dart';
 import 'package:view_model_macro/src/utils/macro_extensions.dart';
 import 'package:view_model_macro/src/utils/string_extensions.dart';
 
-
 /// {@template StateMacro}
 /// A macro for building [StateNotifier]s utility methods.
-/// 
+///
 /// For every [StateNotifier] in the class with the `@StateMacro()` annotation,
 /// the macro will generate the following:
 /// - A public getter for the stream of states from the [StateNotifier].
 /// - A private getter for the current state from the [StateNotifier].
 /// - A private method to emit a new state to the [StateNotifier].
-/// 
+///
 /// See more:
 /// - [ActionMacro]: The macro for building [ActionNotifier]s.
 /// - [DisposeMacro]: The macro for building `dispose` methods.
@@ -44,53 +43,55 @@ macro class StateMacro implements ClassDeclarationsMacro {
     ClassDeclaration clazz,
     MemberDeclarationBuilder builder,
   ) async {
-    final classFields = await builder.fieldsOf(clazz);
-
-    final fields = [...classFields]..removeWhere((field) {
-        final isPrivate = field.name.startsWith('_');
-        final isState = field.name.endsWith('State');
-
-        return !isPrivate || !isState;
-      });
-
-    final stateNotifier = await builder.resolveIdentifier(
+    final stateNotifierIdentifier = await builder.resolveIdentifier(
       stateNotifierCore,
       'StateNotifier',
     );
 
-    final stateNotifierType =
-        await builder.resolve(NamedTypeAnnotationCode(name: stateNotifier));
+    final stateNotifierType = await builder.resolve(
+      NamedTypeAnnotationCode(name: stateNotifierIdentifier),
+    );
 
-    final stateFields = <FieldDeclaration>[];
-    for (final field in fields) {
-      final isPrivate = field.name.startsWith('_');
-      final isState = field.name.endsWith('State');
-
-      if (!isPrivate || !isState) continue;
-
-      if (field.type is OmittedTypeAnnotation) {
-        return builder.reportDiagnostic(
-          'StateNotifier type must be specified at declaration. e.g: '
-          'final StateNotifier<int> _valueState = StateNotifier();',
-          Severity.error,
-          target: field.asDiagnosticTarget,
-        );
-      }
-
-      final type = await builder.resolve(field.type.code);
-      final isStateNotifier = await type.isSubtypeOf(stateNotifierType);
-
-      if (isStateNotifier) {
-        stateFields.add(field);
-      }
-    }
-
-    final stream = await builder.resolveIdentifier(
+    final streamIdentifier = await builder.resolveIdentifier(
       dartAsync,
       'Stream',
     );
 
-    for (final field in stateFields) {
+    final classFields = await builder.fieldsOf(clazz);
+
+    final stateNotifierFields = <FieldDeclaration>[];
+
+
+    for (final field in classFields) {
+      // For now, declaration phase only supports NamedTypeAnnotation
+      if(field.type is OmittedTypeAnnotation) {
+        builder.reportDiagnostic(
+          'Only named types are supported in this macro. e.g: '
+          '<Type> ${field.name}',
+          Severity.warning,
+          target: field.asDiagnosticTarget,
+        );
+        continue;
+      }
+
+      final type = await builder.resolve(field.type.code);
+      final isPrivate = field.name.startsWith('_');
+      final isState = await type.isSubtypeOf(stateNotifierType);
+
+      if (isState) {
+        if (!isPrivate) {
+          builder.reportDiagnostic(
+            'StateNotifier type must be private.',
+            Severity.error,
+            target: field.asDiagnosticTarget,
+          );
+          continue;
+        }
+        stateNotifierFields.add(field);
+      }
+    }
+
+    for (final field in stateNotifierFields) {
       final name = field.name;
       final notifierName = name;
       final stateName = '${name.withoutSuffix('State')}Value';
@@ -114,7 +115,7 @@ macro class StateMacro implements ClassDeclarationsMacro {
         ..declareInType(
           DeclarationCode.fromParts([
             '  ',
-            stream,
+            streamIdentifier,
             '<',
             innerType.code,
             '> get $notifierGetterName => $notifierName.stream;',
@@ -137,4 +138,5 @@ macro class StateMacro implements ClassDeclarationsMacro {
         );
     }
   }
+  
 }
