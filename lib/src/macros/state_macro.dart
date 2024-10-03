@@ -53,8 +53,8 @@ macro class StateMacro implements ClassDeclarationsMacro {
     );
 
     final streamIdentifier = await builder.resolveIdentifier(
-      dartAsync,
-      'Stream',
+      stateNotifierCore,
+      'StateStream',
     );
 
     final classFields = await builder.fieldsOf(clazz);
@@ -118,7 +118,7 @@ macro class StateMacro implements ClassDeclarationsMacro {
             streamIdentifier,
             '<',
             innerType.code,
-            '> get $notifierGetterName => $notifierName.stream;',
+            '> get $notifierGetterName => $notifierName.asStateStream();',
           ]),
         )
         ..declareInType(

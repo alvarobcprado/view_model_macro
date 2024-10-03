@@ -25,9 +25,13 @@ class ActionNotifier<T> extends Notifier<T> {
   @override
   Stream<T> get stream => _controller.stream;
 
+  ActionStream<T> asActionStream() => ActionStream<T>(stream);
+
   @override
   void dispose() {
     super.dispose();
     _controller.close();
   }
 }
+
+extension type ActionStream<T>(Stream<T> stream) {}
