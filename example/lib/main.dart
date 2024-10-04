@@ -43,7 +43,6 @@ class _MainAppState extends State<MainApp> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   counter.countStream.collectAsWidget(
-                    initialData: 0,
                     (value) {
                       return Text('Count: $value');
                     },

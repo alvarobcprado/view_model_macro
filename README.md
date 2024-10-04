@@ -63,7 +63,6 @@ class _MainAppState extends State<MainApp> {
               // Collect the data from the stream
               // and build a widget based on its data
               counter.countStream.collectAsWidget(
-                initialData: 0,
                 (value) {
                   return Text('Count: $value');
                 },

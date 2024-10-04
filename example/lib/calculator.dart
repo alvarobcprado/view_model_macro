@@ -4,7 +4,7 @@ import 'package:view_model_macro/view_model_macro.dart';
 class Calculator {
   Calculator() {
     countStream.collect((countValue) {
-      if (countValue % 3 == 0) {
+      if (countValue % 3 == 0 && countValue > 0) {
         _dispatchShowSnackBar();
       }
     });
