@@ -38,7 +38,7 @@ macro class ActionMacro implements ClassDeclarationsMacro {
     MemberDeclarationBuilder builder,
   ) async {
     final actionNotifierIdentifier = await builder.resolveIdentifier(
-      notifierCore,
+      actionNotifierCore,
       'ActionNotifier',
     );
 
@@ -47,7 +47,7 @@ macro class ActionMacro implements ClassDeclarationsMacro {
     );
 
     final streamIdentifier = await builder.resolveIdentifier(
-      notifierCore,
+      actionNotifierCore,
       'ActionStream',
     );
 

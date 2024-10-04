@@ -44,7 +44,7 @@ macro class StateMacro implements ClassDeclarationsMacro {
     MemberDeclarationBuilder builder,
   ) async {
     final stateNotifierIdentifier = await builder.resolveIdentifier(
-      notifierCore,
+      stateNotifierCore,
       'StateNotifier',
     );
 
@@ -53,7 +53,7 @@ macro class StateMacro implements ClassDeclarationsMacro {
     );
 
     final streamIdentifier = await builder.resolveIdentifier(
-      notifierCore,
+      stateNotifierCore,
       'StateStream',
     );
 

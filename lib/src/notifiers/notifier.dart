@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 
-extension type NotifierStream<T>(Stream<T> stream) {}
-
 /// {@template Notifier}
 /// A base class for [Notifier]s.
 ///
