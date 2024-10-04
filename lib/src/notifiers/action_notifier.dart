@@ -1,6 +1,9 @@
 import 'dart:async';
 
-import 'package:view_model_macro/src/models/notifier.dart';
+import 'package:view_model_macro/src/notifiers/notifiers_barrel.dart';
+
+/// The type wrapper for [Stream]s emitted by an [ActionNotifier].
+extension type ActionStream<T>(Stream<T> stream) {}
 
 /// {@template ActionNotifier}
 /// A [Notifier] that can be used to dispatch actions from ViewModel to View.
@@ -13,21 +16,8 @@ import 'package:view_model_macro/src/models/notifier.dart';
 /// {@endtemplate}
 class ActionNotifier<T> extends Notifier<T> {
   /// {@macro ActionNotifier}
-  ActionNotifier() : _controller = StreamController<T>.broadcast();
+  ActionNotifier();
 
-  final StreamController<T> _controller;
-
-  @override
-  void notify(T value) {
-    _controller.add(value);
-  }
-
-  @override
-  Stream<T> get stream => _controller.stream;
-
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.close();
-  }
+  /// Returns the stream of actions emitted by the [ActionNotifier].
+  ActionStream<T> get actionStream => ActionStream<T>(stream);
 }

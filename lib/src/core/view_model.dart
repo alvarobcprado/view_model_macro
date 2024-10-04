@@ -4,7 +4,7 @@ import 'package:macros/macros.dart';
 import 'package:view_model_macro/src/macros/action_macro.dart';
 import 'package:view_model_macro/src/macros/dispose_macro.dart';
 import 'package:view_model_macro/src/macros/state_macro.dart';
-import 'package:view_model_macro/src/models/models_barrel.dart';
+import 'package:view_model_macro/src/notifiers/notifiers_barrel.dart';
 
 /// {@template ViewModel}
 /// Macro for build a ViewModel based on its states and optional actions.

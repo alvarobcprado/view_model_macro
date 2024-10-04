@@ -1,6 +1,6 @@
 name: view_model_macro
 description: "Experimental support for ViewModel classes in Dart using pckg:macros."
-version: 0.0.4
+version: 0.0.5
 repository: https://github.com/alvarobcprado/view_model_macro
 topics: [macros, view-model]
 
@@ -18,4 +18,3 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   very_good_analysis: ^6.0.0
-

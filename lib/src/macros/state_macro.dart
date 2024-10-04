@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:macros/macros.dart';
-import 'package:view_model_macro/src/models/models_barrel.dart';
+import 'package:view_model_macro/src/notifiers/notifiers_barrel.dart';
 import 'package:view_model_macro/src/utils/libraries.dart';
 import 'package:view_model_macro/src/utils/macro_extensions.dart';
 import 'package:view_model_macro/src/utils/string_extensions.dart';
@@ -53,8 +53,8 @@ macro class StateMacro implements ClassDeclarationsMacro {
     );
 
     final streamIdentifier = await builder.resolveIdentifier(
-      dartAsync,
-      'Stream',
+      stateNotifierCore,
+      'StateStream',
     );
 
     final classFields = await builder.fieldsOf(clazz);
@@ -118,7 +118,7 @@ macro class StateMacro implements ClassDeclarationsMacro {
             streamIdentifier,
             '<',
             innerType.code,
-            '> get $notifierGetterName => $notifierName.stream;',
+            '> get $notifierGetterName => $notifierName.stateStream;',
           ]),
         )
         ..declareInType(
