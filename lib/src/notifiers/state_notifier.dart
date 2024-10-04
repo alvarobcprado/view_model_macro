@@ -1,6 +1,9 @@
 import 'dart:async';
 
-import 'package:view_model_macro/src/models/notifier.dart';
+import 'package:view_model_macro/src/notifiers/notifier.dart';
+
+/// The type wrapper for [Stream]s emitted by a [StateNotifier].
+extension type StateStream<T>(Stream<T> stream) {}
 
 /// {@template StateNotifier}
 /// A [Notifier] that holds a state of type [T].
@@ -18,8 +21,6 @@ class StateNotifier<T> extends Notifier<T> {
   /// {@macro StateNotifier}
   StateNotifier(this._state);
 
-  late final StreamController<T> _controller = StreamController<T>.broadcast();
-
   T _state;
 
   /// The current state value.
@@ -28,20 +29,9 @@ class StateNotifier<T> extends Notifier<T> {
   @override
   void notify(T value) {
     _state = value;
-    _controller.add(value);
+    super.notify(value);
   }
 
-  @override
-  Stream<T> get stream => _controller.stream;
-
-  StateStream<T> asStateStream() => StateStream<T>(stream);
-
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.close();
-  }
-}
-
-extension type StateStream<T>(Stream<T> stream) {
+  /// Returns a stream of states emitted by the [StateNotifier].
+  StateStream<T> get stateStream => StateStream<T>(stream);
 }

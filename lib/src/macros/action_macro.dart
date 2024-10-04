@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:macros/macros.dart';
-import 'package:view_model_macro/src/models/models_barrel.dart';
+import 'package:view_model_macro/src/notifiers/notifiers_barrel.dart';
 import 'package:view_model_macro/src/utils/libraries.dart';
 import 'package:view_model_macro/src/utils/macro_extensions.dart';
 import 'package:view_model_macro/src/utils/string_extensions.dart';
@@ -38,7 +38,7 @@ macro class ActionMacro implements ClassDeclarationsMacro {
     MemberDeclarationBuilder builder,
   ) async {
     final actionNotifierIdentifier = await builder.resolveIdentifier(
-      actionNotifierCore,
+      notifierCore,
       'ActionNotifier',
     );
 
@@ -47,7 +47,7 @@ macro class ActionMacro implements ClassDeclarationsMacro {
     );
 
     final streamIdentifier = await builder.resolveIdentifier(
-      actionNotifierCore,
+      notifierCore,
       'ActionStream',
     );
 
@@ -111,7 +111,7 @@ macro class ActionMacro implements ClassDeclarationsMacro {
             streamIdentifier,
             '<',
             innerType.code,
-            '> get $notifierGetterName => $notifierName.stream;',
+            '> get $notifierGetterName => $notifierName.actionStream;',
           ]),
         )
         ..declareInType(

@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:macros/macros.dart';
-import 'package:view_model_macro/src/models/models_barrel.dart';
+import 'package:view_model_macro/src/notifiers/notifiers_barrel.dart';
 import 'package:view_model_macro/src/utils/libraries.dart';
 import 'package:view_model_macro/src/utils/macro_extensions.dart';
 

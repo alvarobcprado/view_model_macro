@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:view_model_macro/src/models/action_notifier.dart';
-import 'package:view_model_macro/src/models/state_notifier.dart';
+import 'package:view_model_macro/src/notifiers/notifiers_barrel.dart';
 import 'package:view_model_macro/src/widgets/stream_listener.dart';
 
 /// Extension methods for collecting data from [StateStream]s.
