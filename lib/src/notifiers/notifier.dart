@@ -16,9 +16,10 @@ import 'package:meta/meta.dart';
 /// {@endtemplate}
 abstract class Notifier<T> {
   /// {@macro Notifier}
-  Notifier();
+  Notifier([StreamController<T>? controller]):
+      _controller = controller ?? StreamController<T>.broadcast();
 
-  final StreamController<T> _controller = StreamController<T>.broadcast();
+  final StreamController<T> _controller;
   final List<StreamSubscription<T>> _subscriptions = [];
 
   /// Notifies all listeners with the new value.

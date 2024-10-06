@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/rxdart.dart';
 import 'package:view_model_macro/src/notifiers/notifier.dart';
 
 /// The type wrapper for [Stream]s emitted by a [StateNotifier].
@@ -19,7 +20,7 @@ extension type StateStream<T>(Stream<T> stream) {}
 /// {@endtemplate}
 class StateNotifier<T> extends Notifier<T> {
   /// {@macro StateNotifier}
-  StateNotifier(this._state);
+  StateNotifier(this._state) : super(BehaviorSubject<T>.seeded(_state));
 
   T _state;
 
