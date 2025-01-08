@@ -35,23 +35,16 @@ class _MainAppState extends State<MainApp> {
           child: const Icon(Icons.add),
           onPressed: () => counter.add(),
         ),
-        body: Builder(builder: (context) {
-          return counter.showSnackBarStream.collectAsListener(
-            onData: (_) => _onShowSnackBar(context),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  counter.countStream.collectAsWidget(
-                    (value) {
-                      return Text('Count: $value');
-                    },
-                  ),
-                ],
-              ),
+        body: Collector(
+          (context) => Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Count: ${counter.count}'),
+              ],
             ),
-          );
-        }),
+          ),
+        ),
       ),
     );
   }

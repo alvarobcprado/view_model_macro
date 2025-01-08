@@ -3,22 +3,14 @@
 import 'dart:async';
 
 import 'package:macros/macros.dart';
-import 'package:view_model_macro/src/notifiers/notifiers_barrel.dart';
-import 'package:view_model_macro/src/utils/libraries.dart';
+import 'package:view_model_macro/src/macros/view_model_macro.dart';
 import 'package:view_model_macro/src/utils/macro_extensions.dart';
 
 /// {@template DisposeMacro}
-/// A macro for building `dispose` method for [Notifier]s in the class.
-/// 
-/// For every [Notifier] in the class with the `@DisposeMacro()` annotation, the
-/// macro will generate the following:
-/// - A `dispose` method that will call dispose on all [Notifier]s declared in 
-/// the class.
+/// A macro for building `dispose` method 
 /// 
 /// See more:
-/// - [StateMacro]: The macro for building [StateNotifier]s.
-/// - [ActionMacro]: The macro for building [ActionNotifier]s.
-/// - [ViewModel]: The macro for building ViewModels.
+/// - [ViewModelMacro]: The macro for building ViewModels.
 /// {@endtemplate}
 macro class DisposeMacro
     implements ClassDeclarationsMacro, ClassDefinitionMacro {
@@ -68,35 +60,16 @@ macro class DisposeMacro
 
     final disposeBuilder = await builder.buildMethod(dispose.identifier);
 
-    final fields = await builder.fieldsOf(clazz);
-
-    final notifier = await builder.resolveIdentifier(
-      notifierCore,
-      'Notifier',
-    );
-
     final disposableFields = <FieldDeclaration>[];
-    for (final field in fields) {
-      final type = field.type is OmittedTypeAnnotation
-          ? await builder.inferType(field.type as OmittedTypeAnnotation)
-          : field.type.code;
-
-      final fieldType = await builder.resolve(type.code);
-      final notifierType = await builder.resolve(
-        NamedTypeAnnotationCode(name: notifier),
-      );
-
-      if (await fieldType.isSubtypeOf(notifierType)) {
-        disposableFields.add(field);
-      }
-    }
 
     disposeBuilder.augment(
       FunctionBodyCode.fromParts([
         '{\n',
         for (final field in disposableFields) '    ${field.name}.dispose();\n',
+        '    super.dispose();\n',
         '  }',
-      ]),
+        '\n',
+      ],),
     );
   }
 }

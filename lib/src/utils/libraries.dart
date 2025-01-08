@@ -2,13 +2,14 @@
 
 final dartCore = Uri.parse('dart:core');
 final dartAsync = Uri.parse('dart:async');
-final flutterFoundation =
-    Uri.parse('package:flutter/src/foundation/change_notifier.dart',);
-final notifierCore =
-    Uri.parse('package:view_model_macro/src/notifiers/notifier.dart',);
-final stateNotifierCore = Uri.parse(
-  'package:view_model_macro/src/notifiers/state_notifier.dart',
+final metaCore = Uri.parse('package:meta/meta.dart');
+final flutterFoundation = Uri.parse(
+  'package:flutter/src/foundation/change_notifier.dart',
 );
-final actionNotifierCore = Uri.parse(
-  'package:view_model_macro/src/notifiers/action_notifier.dart',
+final commandCore = Uri.parse(
+  'package:view_model_macro/src/core/command/command.dart',
+);
+
+final resultCore = Uri.parse(
+  'package:view_model_macro/src/core/result.dart',
 );

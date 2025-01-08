@@ -1,59 +1,82 @@
-import 'dart:async';
-
-import 'package:macros/macros.dart';
-import 'package:view_model_macro/src/macros/action_macro.dart';
-import 'package:view_model_macro/src/macros/dispose_macro.dart';
-import 'package:view_model_macro/src/macros/state_macro.dart';
-import 'package:view_model_macro/src/notifiers/notifiers_barrel.dart';
+import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
 
 /// {@template ViewModel}
-/// Macro for build a ViewModel based on its states and optional actions.
-/// 
-/// For every [StateNotifier] in the class with the `@ViewModel()` annotation,
-/// the macro will generate the following:
-/// - A public getter for the stream of states from the [StateNotifier].
-/// - A private getter for the current state from the [StateNotifier].
-/// - A private method to emit a new state to the [StateNotifier].
-/// 
-/// If [enableActions] is true, the macro will generate the following for every
-/// [ActionNotifier] in the class:
-/// - A public getter for the stream of actions from the [ActionNotifier].
-/// - A private method to emit a new action to the [ActionNotifier].
-/// 
-/// The macro will also generate a `dispose` method that will dispose all
-/// [StateNotifier]s and [ActionNotifier]s declared in the class.
-/// 
-/// See more:
-/// - [StateMacro]: The macro for building [StateNotifier]s.
-/// - [ActionMacro]: The macro for building [ActionNotifier]s.
-/// - [DisposeMacro]: The macro for building `dispose` methods.
+/// A base class for ViewModels that extends [ChangeNotifier].
 /// {@endtemplate}
-macro class ViewModel implements ClassDeclarationsMacro, ClassDefinitionMacro {
+abstract class ViewModel extends ChangeNotifier {
   /// {@macro ViewModel}
-  const ViewModel({this.enableActions = false});
+  ViewModel() {
+    init();
+  }
 
-  /// If true, the macro will generate utility methods for [ActionNotifier]s.
-  /// The default value is false.
-  final bool enableActions;
+  /// Method called when the ViewModel is initialized.
+  void init() {}
 
   @override
-  FutureOr<void> buildDeclarationsForClass(
-    ClassDeclaration clazz,
-    MemberDeclarationBuilder builder,
-  ) async {
-    await const StateMacro().buildDeclarationsForClass(clazz, builder);
-    if (enableActions) {
-      await const ActionMacro().buildDeclarationsForClass(clazz, builder);
+  void notifyListeners([Function? fn]) {
+    if (fn != null) {
+      // ignore: avoid_dynamic_calls
+      fn();
     }
+    super.notifyListeners();
+  }
 
-    await const DisposeMacro().buildDeclarationsForClass(clazz, builder);
+  /// Returns the specified [value].
+  @internal
+  T getValue<T>(T value) {
+    final currentCollector = _CollectorState.currentCollector;
+    if (currentCollector != null) {
+      currentCollector.addViewNotifier(this);
+    }
+    return value;
+  }
+}
+
+/// {@template Collector}
+/// A widget that collects [ChangeNotifier]s and rebuilds the widget tree
+/// whenever any of the [ChangeNotifier]s notify listeners.
+/// {@endtemplate}
+class Collector extends StatefulWidget {
+  /// {@macro Collector}
+  const Collector(this.builder, {super.key});
+
+  /// The builder function that builds the widget tree.
+  final WidgetBuilder builder;
+
+  @override
+  State<Collector> createState() => _CollectorState();
+}
+
+class _CollectorState extends State<Collector> {
+  static final List<_CollectorState> _collectorStack = [];
+  final Set<ChangeNotifier> _notifiers = {};
+
+  void addViewNotifier(ChangeNotifier notifier) {
+    if (_notifiers.add(notifier)) {
+      notifier.addListener(_notifyView);
+    }
   }
 
   @override
-  FutureOr<void> buildDefinitionForClass(
-    ClassDeclaration clazz,
-    TypeDefinitionBuilder builder,
-  ) async {
-    await const DisposeMacro().buildDefinitionForClass(clazz, builder);
+  void dispose() {
+    super.dispose();
+    for (final notifier in _notifiers) {
+      notifier.removeListener(_notifyView);
+    }
   }
+
+  void _notifyView() => setState(() {});
+
+  @override
+  Widget build(BuildContext context) {
+    _collectorStack.add(this); // Empilha o coletor atual
+    final collectorAsWidget = widget.builder(context);
+    _collectorStack.removeLast(); // Remove ao sair do escopo
+
+    return collectorAsWidget;
+  }
+
+  static _CollectorState? get currentCollector =>
+      _collectorStack.isNotEmpty ? _collectorStack.last : null;
 }
