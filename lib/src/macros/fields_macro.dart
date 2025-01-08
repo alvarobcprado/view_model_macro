@@ -41,12 +41,12 @@ ClassDefinitionMacro {
         ..declareInType(
           DeclarationCode.fromParts(
             [
-              'external ',
+              '  external ',
               namedType.identifier,
               if (namedType.isNullable) '?',
               ' get ',
               publicName,
-              ';',
+              ';\n',
             ],
           ),
         )
@@ -63,7 +63,7 @@ ClassDefinitionMacro {
               namedType.identifier,
               if (namedType.isNullable) '?',
               ' value',
-              ');',
+              ');\n',
             ],
           ),
         );
@@ -86,7 +86,7 @@ ClassDefinitionMacro {
       final fieldName = '_${getter.identifier.name}';
 
       getterMethod.augment(
-        FunctionBodyCode.fromString('=> getValue($fieldName);'),
+        FunctionBodyCode.fromString('=> getValue($fieldName);\n'),
       );
     }
 
@@ -101,7 +101,7 @@ ClassDefinitionMacro {
             '    if(value != _$fieldName){\n',
             '      _$fieldName = value;\n',
             '    }',
-            '\n  }',
+            '\n  }\n',
           ],
         ),
       );

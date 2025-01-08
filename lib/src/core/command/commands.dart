@@ -1,13 +1,13 @@
 part of 'command.dart';
 
 /// Typedefs for a [Command] action without arguments.
-typedef CommandAction0<T> = Future<Result<T>> Function();
+typedef CommandAction0<T> = FutureOr<T> Function();
 
 /// Typedefs for a [Command] action with one argument of type [A].
-typedef CommandAction1<T, A> = Future<Result<T>> Function(A);
+typedef CommandAction1<T, A> = FutureOr<T> Function(A);
 
 /// Typedefs for a [Command] action with two arguments of type [A] and [B].
-typedef CommandAction2<T, A, B> = Future<Result<T>> Function(A, B);
+typedef CommandAction2<T, A, B> = FutureOr<T> Function(A, B);
 
 /// {@template Command0}
 /// A [Command] to run an action without arguments.

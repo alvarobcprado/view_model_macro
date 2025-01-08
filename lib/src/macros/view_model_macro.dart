@@ -29,9 +29,7 @@ ClassDefinitionMacro {
     ClassDeclaration clazz,
     MemberDeclarationBuilder builder,
   ) async {
-
     await const FieldsMacro().buildDeclarationsForClass(clazz, builder);
-    await const DisposeMacro().buildDeclarationsForClass(clazz, builder);
   }
 
   @override
@@ -40,6 +38,5 @@ ClassDefinitionMacro {
     TypeDefinitionBuilder builder,
   ) async {
     await const FieldsMacro().buildDefinitionForClass(clazz, builder);
-    await const DisposeMacro().buildDefinitionForClass(clazz, builder);
   }
 }

@@ -55,7 +55,7 @@ abstract class Command<T> extends ChangeNotifier {
 
     try {
       final result = await action();
-      _state = CommandCompleted(result);
+      _state = CommandCompleted(Result.success(result));
     } catch (e) {
       _state = CommandError(e);
     } finally {
