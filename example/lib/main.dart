@@ -21,19 +21,29 @@ class _MainAppState extends State<MainApp> {
     super.dispose();
   }
 
-  void _onShowSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Show SnackBar from ActionNotifier')),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () => counter.add(),
+        floatingActionButton: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () => counter.add(),
+            ),
+            const SizedBox(height: 8),
+            FloatingActionButton(
+              onPressed: counter.subtract.run,
+              child: CommandCollector(
+                (context) {
+                  return counter.subtract.isRunning
+                      ? const CircularProgressIndicator()
+                      : const Icon(Icons.remove);
+                },
+              ),
+            )
+          ],
         ),
         body: Collector(
           (context) => Center(
