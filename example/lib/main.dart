@@ -18,6 +18,7 @@ class _MainAppState extends State<MainApp> {
 
   @override
   void dispose() {
+    counter.dispose();
     super.dispose();
   }
 
