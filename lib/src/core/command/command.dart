@@ -35,8 +35,7 @@ abstract class Command<T> extends ChangeNotifier {
   /// Indicates if the [Command] is completed.
   bool get isCompleted => state.isCompleted;
 
-
-  /// Returns the current [CommandState] and adds the [Command] to the current 
+  /// Returns the current [CommandState] and adds the [Command] to the current
   /// collector.
   @internal
   R getValue<R>(R value) {
@@ -53,13 +52,17 @@ abstract class Command<T> extends ChangeNotifier {
     _state = const CommandRunning();
     notifyListeners();
 
+    late CommandState<T> newState;
     try {
       final result = await action();
-      _state = CommandCompleted(Result.success(result));
+      newState = CommandCompleted(Result.success(result));
     } catch (e) {
-      _state = CommandError(e);
+      newState = CommandError(e);
     } finally {
-      notifyListeners();
+      if (isRunning) {
+        _state = newState;
+        notifyListeners();
+      }
     }
   }
 

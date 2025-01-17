@@ -9,6 +9,10 @@ typedef CommandAction1<T, A> = FutureOr<T> Function(A);
 /// Typedefs for a [Command] action with two arguments of type [A] and [B].
 typedef CommandAction2<T, A, B> = FutureOr<T> Function(A, B);
 
+/// Typedefs for a [Command] action with three arguments of type [A], [B] and 
+/// [C].
+typedef CommandAction3<T, A, B, C> = FutureOr<T> Function(A, B, C);
+
 /// {@template Command0}
 /// A [Command] to run an action without arguments.
 /// Takes a [CommandAction0] as action.
@@ -35,9 +39,9 @@ final class Command1<T, A> extends Command<T> {
 
   final CommandAction1<T, A> _action;
 
-  /// Executes the action with the argument.
-  Future<void> run(A argument) async {
-    await _run(() => _action(argument));
+  /// Executes the action with the p0.
+  Future<void> run(A p0) async {
+    await _run(() => _action(p0));
   }
 }
 
@@ -52,7 +56,23 @@ final class Command2<T, A, B> extends Command<T> {
   final CommandAction2<T, A, B> _action;
 
   /// Executes the action with the arguments.
-  Future<void> run(A argument1, B argument2) async {
-    await _run(() => _action(argument1, argument2));
+  Future<void> run(A p0, B p1) async {
+    await _run(() => _action(p0, p1));
+  }
+}
+
+/// {@template Command3}
+/// A [Command] to run an action with two arguments.
+/// Takes a [CommandAction3] as action.
+/// {@endtemplate}
+final class Command3<T, A, B, C> extends Command<T> {
+  /// {@macro Command3}
+  Command3(this._action);
+
+  final CommandAction3<T, A, B, C> _action;
+
+  /// Executes the action with the arguments.
+  Future<void> run(A p0, B p1, C p2) async {
+    await _run(() => _action(p0, p1, p2));
   }
 }

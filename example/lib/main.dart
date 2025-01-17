@@ -30,17 +30,24 @@ class _MainAppState extends State<MainApp> {
           mainAxisSize: MainAxisSize.min,
           children: [
             FloatingActionButton(
+              onPressed: counter.add.run,
               child: const Icon(Icons.add),
-              onPressed: () => counter.add(),
             ),
             const SizedBox(height: 8),
             FloatingActionButton(
               onPressed: counter.subtract.run,
+              child: const Icon(Icons.remove),
+            ),
+            const SizedBox(height: 8),
+            FloatingActionButton(
+              onPressed: () => counter.reset.run(true, 'Reseted!'),
               child: CommandCollector(
                 (context) {
-                  return counter.subtract.isRunning
+                  final isReseting = counter.reset.isRunning;
+
+                  return isReseting
                       ? const CircularProgressIndicator()
-                      : const Icon(Icons.remove);
+                      : const Icon(Icons.refresh);
                 },
               ),
             )

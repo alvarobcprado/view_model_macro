@@ -2,7 +2,9 @@
 
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:macros/macros.dart';
+import 'package:view_model_macro/src/utils/constants.dart';
 import 'package:view_model_macro/src/utils/libraries.dart';
 import 'package:view_model_macro/src/utils/macro_extensions.dart';
 
@@ -70,9 +72,19 @@ macro class CommandMacro implements MethodDeclarationsMacro {
     }
 
     final positionalParameters = method.positionalParameters;
-    if (positionalParameters.length > 2) {
+    if (positionalParameters.length > Constants.maxCommandParameters) {
       builder.reportDiagnostic(
-        'Only methods with 2 or less positional parameters are allowed to '
+        'Only methods with at most ${Constants.maxCommandParameters} or '
+        'less positional parameters are allowed to '
+        'be Commands.',
+        Severity.error,
+      );
+      return;
+    }
+
+    if(positionalParameters.any((p) => !p.isRequired)) {
+      builder.reportDiagnostic(
+        'Only methods with all required positional parameters are allowed to '
         'be Commands.',
         Severity.error,
       );
@@ -86,6 +98,13 @@ macro class CommandMacro implements MethodDeclarationsMacro {
       'Command$parameterCount',
     );
 
+    final parameters = positionalParameters.mapIndexed((i, p) => 'p$i').join(
+          ', ',
+        );
+    
+    final parameterTypes = positionalParameters
+        .map((p) => p.type.code);
+
     builder.declareInType(
       DeclarationCode.fromParts(
         [
@@ -93,11 +112,11 @@ macro class CommandMacro implements MethodDeclarationsMacro {
           command,
           '<',
           namedReturnType.typeArguments.first.code,
-          if (namedReturnType.isNullable) '?',
+          for (final parameterType in parameterTypes) ...[', ', parameterType],
           '>',
           ' $publicName = ',
           command,
-          '(${method.name});\n',
+          '(($parameters) => ${method.name}($parameters));\n',
         ],
       ),
     );
